@@ -181,8 +181,6 @@ function normalizeTime(timeString: string): string {
   return `${hours.toString().padStart(2, "0")}:${minutes}`;
 }
 
-eventSchema.index({ slug: 1 }, { unique: true });
-
 eventSchema.index({ date: 1, mode: 1 });
 
 export const EventModel =
