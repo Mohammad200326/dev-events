@@ -1,4 +1,4 @@
-import mongoose, { Schema, Types, Document, mongo } from "mongoose";
+import mongoose, { Schema, Types, Document } from "mongoose";
 import { EventModel } from "./event.model";
 
 export interface IBooking extends Document {
@@ -79,4 +79,5 @@ bookingSchema.index(
   { unique: true, name: "uniq_event_email" }
 );
 
-export const BookingModel = mongoose.model<IBooking>("Booking", bookingSchema);
+export const BookingModel =
+  mongoose.models.Booking || mongoose.model<IBooking>("Booking", bookingSchema);
