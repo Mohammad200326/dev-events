@@ -1,4 +1,7 @@
 import BookEvent from "@/components/BookEvent";
+import EventCard from "@/components/EventCard";
+import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
+import { IEvent } from "@/models";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -45,6 +48,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const response = await fetch(`${BASE_URL}/api/events/${slug}`);
   const {
     event: {
+      _id,
       title,
       description,
       image,
@@ -63,6 +67,8 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   if (!description) notFound();
 
   const bookings = 10;
+
+  const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 
   return (
     <section id="event">
@@ -105,14 +111,14 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
             />
           </section>
 
-          <EventAgenda agendaItems={agenda[0].split(",")} />
+          <EventAgenda agendaItems={agenda} />
 
           <section className="flex-col-gap-2">
             <h2>About The Organizer</h2>
             <p>{organizer}</p>
           </section>
 
-          <EventTags tags={tags[0].split(",")} />
+          <EventTags tags={tags} />
         </div>
         {/* Right Side - Booking Form */}
         <aside className="booking">
@@ -126,9 +132,19 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
               <p className="text-sm">Be the first to book your spot!</p>
             )}
 
-            <BookEvent />
+            <BookEvent eventId={_id} slug={slug} />
           </div>
         </aside>
+      </div>
+
+      <div className="flex flex-col w-full gap-4 pt-20">
+        <h2>Similar Events</h2>
+        <div className="events">
+          {similarEvents.length > 0 &&
+            similarEvents.map((event: IEvent) => (
+              <EventCard key={event.title} {...event} />
+            ))}
+        </div>
       </div>
     </section>
   );
